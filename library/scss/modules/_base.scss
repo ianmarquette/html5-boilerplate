@@ -1,19 +1,6 @@
-/******************************************************************
-Site Name:
-Author:
-
-Stylesheet: Mixins & Constants Stylesheet
-
-This is where you can take advantage of Sass' great features:
-Mixins & Constants. I won't go in-depth on how they work exactly,
-there are a few articles below that will help do that. What I will
-tell you is that this will help speed up simple changes like
-changing a color or adding CSS3 techniques gradients.
-
-A WORD OF WARNING: It's very easy to overdo it here. Be careful and
-remember less is more.
-
-******************************************************************/
+/*********************
+BASE
+*********************/
 
 /*********************
 CLEARFIXIN'
@@ -51,10 +38,7 @@ Need help w/ choosing your colors? Try this site out:
 http://0to255.com/
 *********************/
 
-$alert-yellow:      #ebe16f;
 $alert-red:         #fbe3e4;
-$alert-green:       #e6efc2;
-$alert-blue:        #d5edf8;
 
 $black:             #000;
 $white:             #fff;
@@ -119,29 +103,6 @@ span.amp {
 	border: 1px solid;
 }
 
-.alert-help {
-	@extend %alert;
-	border-color: darken($alert-yellow, 5%);
-	background: $alert-yellow;
-}
-
-.alert-info {
-	@extend %alert;
-	border-color: darken($alert-blue, 5%);
-	background: $alert-blue;
-}
-
-.alert-error {
-	@extend %alert;
-	border-color: darken($alert-red, 5%);
-	background: $alert-red;
-}
-
-.alert-success {
-	@extend %alert;
-	border-color: darken($alert-green, 5%);
-	background: $alert-green;
-}
 
 /*********************
 TRANSITION
@@ -263,5 +224,83 @@ $spritegrid: 200;
     } 
 }
 
+/*********************
+REM TO PX FALLBACK
+*********************/
 
+// Mixin that allows to specify arbitrary CSS properties with
+// unitless numbers. The output has rem unit with pixel fallback.
+// Shorthand assignments are supported too!
+$base_line: 16;
+
+@mixin rem($property, $values)
+{
+  // Placeholder variables
+  $shorthand_px:  "";
+  $shorthand_rem: "";
+
+  // Parameter $values might be a list of elements
+  @each $value in $values
+  {
+    // Current value is a valid number and greater than 0
+    @if $value != auto and $value != 0
+    {
+      // Add 'px' and 'rm' to the current value and store in
+      // placeholder variables
+      $shorthand_px: #{ $shorthand_px + " " + $value * $base_line + px };
+      $shorthand_rem: #{ $shorthand_rem + " " + $value + rem };
+    }
+    // Current value is 'auto' or 0
+    @else
+    {
+      // Add only 'auto' or 0 to the placeholder variables
+      $shorthand_px: #{ $shorthand_px + " " + $value };
+      $shorthand_rem: #{ $shorthand_rem + " " + $value };
+    }
+  }
+
+  // Output the CSS property in pixels and rems
+  #{$property}:$shorthand_px;
+  #{$property}:$shorthand_rem;
+}
+
+// Examples
+//
+// body
+// {
+//   @include rem(font-size, $bodyFontSize);
+//   @include rem(padding, 0 $bodyFontSize);
+// }
+// 
+// .wrapper
+// {
+//  @include rem(margin, 0 auto $bodyFontSize);
+// }
+
+/*********************
+MEDIA QUERIES
+*********************/
+@mixin breakpoint($point) {
+  @if $point == papa-bear {
+    // 64em = 1030px/16px
+    @media (max-width: 64em) { @content; }
+  }
+  @else if $point == mama-bear {
+    // 48em = 768px/16px
+    @media (max-width: 48em) { @content; }
+  }
+  @else if $point == baby-bear {
+    // 30em = 480px/16px
+    @media (max-width: 30em)  { @content; }
+  }
+}
+
+// Examples
+//
+// .page-wrap {
+//    width: 75%;
+//    @include breakpoint(papa-bear) { width: 60%; }
+//    @include breakpoint(mama-bear) { width: 80%; }
+//    @include breakpoint(baby-bear) { width: 95%; }
+//  }
 
